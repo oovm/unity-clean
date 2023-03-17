@@ -76,18 +76,18 @@ pub fn delete_useless(path: &Path) -> anyhow::Result<()> {
         for dir in delete_dir {
             if name.eq_ignore_ascii_case(dir) {
                 println!("Delete: {:?}", path.display());
-                std::fs::remove_dir_all(&path)?;
+                trash::delete_all(&path)?;
                 continue 'outer;
             }
         }
-        if path.ends_with(".csproj") {
+        if name.ends_with(".csproj") {
             println!("Delete: {:?}", path.display());
-            std::fs::remove_file(&path)?;
+            trash::delete(&path)?;
             continue;
         }
-        if path.ends_with(".sln") {
+        if name.ends_with(".sln") {
             println!("Delete: {:?}", path.display());
-            std::fs::remove_file(&path)?;
+            trash::delete(&path)?;
             continue;
         }
     }
