@@ -3,6 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use crate::utils::is_unity_path;
 use gen_iter::GenIter;
 
 // use walkdir::{DirEntry, WalkDir};
@@ -22,9 +23,9 @@ impl UnityProjectFinder {
                     }
                 };
                 'inner: for path in dir {
-                    let (path, name) = match path_info(path) {
+                    let (path, _) = match path_info(path) {
                         Ok(o) => o,
-                        Err(_) => {
+                        Err(e) => {
                             tracing::error!("{e}");
                             continue 'outer;
                         }
@@ -53,42 +54,26 @@ pub fn fast_skip(dir: &Path) -> Option<bool> {
     Some(false)
 }
 
-pub fn is_unity_path(dir: &Path) -> bool {
-    let assets = dir.join("Assets");
-    if !assets.exists() || !assets.is_dir() {
-        return false;
-    }
-    let packages = dir.join("Packages");
-    if !packages.exists() || !packages.is_dir() {
-        return false;
-    }
-    let project_settings = dir.join("ProjectSettings");
-    if !project_settings.exists() || !project_settings.is_dir() {
-        return false;
-    }
-    return true;
-}
+const DELETE_DIR: &[&str] = &["Library", "Logs", "obj", "Temp"];
+const DELETE_EXT: &[&str] = &[".sln", ".csproj"];
 
 pub fn delete_useless(path: &Path) -> anyhow::Result<()> {
     'outer: for file in read_dir(path)? {
         let (path, name) = path_info(file)?;
-        let delete_dir = &["Library", "Logs", "obj", "Temp"];
-        for dir in delete_dir {
+
+        for dir in DELETE_DIR {
             if name.eq_ignore_ascii_case(dir) {
                 println!("Delete: {:?}", path.display());
-                trash::delete_all(&path)?;
+                trash::delete(&path)?;
                 continue 'outer;
             }
         }
-        if name.ends_with(".csproj") {
-            println!("Delete: {:?}", path.display());
-            trash::delete(&path)?;
-            continue;
-        }
-        if name.ends_with(".sln") {
-            println!("Delete: {:?}", path.display());
-            trash::delete(&path)?;
-            continue;
+        for file in DELETE_EXT {
+            if name.ends_with(file) {
+                println!("Delete: {:?}", path.display());
+                trash::delete(&path)?;
+                continue 'outer;
+            }
         }
     }
     Ok(())
