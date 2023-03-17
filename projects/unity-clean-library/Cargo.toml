@@ -11,6 +11,8 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
+walkdir = "2.3.3"
+anyhow = "1.0.69"
 
 [dev-dependencies]
 
