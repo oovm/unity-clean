@@ -1,5 +1,5 @@
 [package]
-name = "sub_projects"
+name = "unity-clean"
 publish = false
 version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
@@ -11,9 +11,9 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
-#walkdir = "2.3.3"
 anyhow = "1.0.69"
 gen-iter = "0.3.0"
+tracing = "0.1.37"
 
 [dev-dependencies]
 

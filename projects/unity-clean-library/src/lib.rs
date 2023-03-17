@@ -1,3 +1,5 @@
-mod find_unity_project;
+#![feature(generators)]
 
-pub use find_unity_project::*;
+mod project_finder;
+
+pub use project_finder::*;

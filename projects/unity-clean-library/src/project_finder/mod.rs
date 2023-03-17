@@ -1,32 +1,49 @@
-use std::fs::DirEntry;
-use std::fs::read_dir;
-use std::path::{Path, PathBuf};
+use std::{
+    fs::{read_dir, DirEntry},
+    path::{Path, PathBuf},
+};
+
+use gen_iter::GenIter;
 
 // use walkdir::{DirEntry, WalkDir};
 
-pub struct UnityCleaner {}
+pub struct UnityProjectFinder {}
 
-
-pub fn find_unity_project(root: &Path) -> anyhow::Result<Vec<PathBuf>> {
-    let mut projects = vec![];
-    let mut check_list = vec![root.to_path_buf()];
-    while let Some(dir) = check_list.pop() {
-        for path in read_dir(dir)? {
-            let path = path?.path();
-            if fast_skip(&path).unwrap_or(false) {
-                continue;
+impl UnityProjectFinder {
+    pub fn find<P: AsRef<Path>>(root: P) -> impl Iterator<Item = PathBuf> {
+        let mut check_list = vec![root.as_ref().to_path_buf()];
+        GenIter(move || {
+            'outer: while let Some(dir) = check_list.pop() {
+                let dir = match read_dir(dir) {
+                    Ok(o) => o,
+                    Err(e) => {
+                        tracing::error!("{e}");
+                        continue 'outer;
+                    }
+                };
+                'inner: for path in dir {
+                    let (path, name) = match path_info(path) {
+                        Ok(o) => o,
+                        Err(_) => {
+                            tracing::error!("{e}");
+                            continue 'outer;
+                        }
+                    };
+                    if fast_skip(&path).unwrap_or(false) {
+                        continue 'inner;
+                    }
+                    if is_unity_path(&path) {
+                        println!("Found: {:?}", path.display());
+                        yield path;
+                        continue 'inner;
+                    }
+                    if path.is_dir() {
+                        check_list.push(path)
+                    }
+                }
             }
-            if is_unity_path(&path) {
-                println!("Found: {:?}", path.display());
-                projects.push(path);
-                continue;
-            }
-            if path.is_dir() {
-                check_list.push(path)
-            }
-        }
+        })
     }
-    Ok(projects)
 }
 
 pub fn fast_skip(dir: &Path) -> Option<bool> {
@@ -38,11 +55,11 @@ pub fn fast_skip(dir: &Path) -> Option<bool> {
 
 pub fn is_unity_path(dir: &Path) -> bool {
     let assets = dir.join("Assets");
-    if assets.exists() && assets.is_dir() {
+    if !assets.exists() || !assets.is_dir() {
         return false;
     }
     let packages = dir.join("Packages");
-    if packages.exists() && packages.is_dir() {
+    if !packages.exists() || !packages.is_dir() {
         return false;
     }
     let project_settings = dir.join("ProjectSettings");
@@ -80,7 +97,7 @@ pub fn delete_useless(path: &Path) -> anyhow::Result<()> {
 fn path_info(entry: std::io::Result<DirEntry>) -> anyhow::Result<(PathBuf, String)> {
     let entry = entry?;
     let name = match entry.file_name().to_str() {
-        Some(s) => { s.to_string() }
+        Some(s) => s.to_string(),
         None => {
             return Err(anyhow::anyhow!("file name is not utf-8"));
         }
