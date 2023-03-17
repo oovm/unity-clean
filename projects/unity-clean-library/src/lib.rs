@@ -1,7 +1,7 @@
 #![feature(generators)]
 
-mod project_finder;
-
-pub use project_finder::*;
+mod deduplication;
+mod project_clean;
+pub use project_clean::*;
 
 mod utils;
