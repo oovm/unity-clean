@@ -1,7 +1,8 @@
 [workspace]
 members = ["projects/*"]
 default-members = [
-    "projects/unity-clean-library",
+    "projects/unity-tools",
+    "projects/unity-utils",
 ]
 exclude = [
     "projects/.DS_Store",

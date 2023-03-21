@@ -1,0 +1,31 @@
+[package]
+name = "unity-tools"
+version = "0.0.0"
+authors = ["Aster <192607617@qq.com>"]
+description = "..."
+repository = "https://github.com/oovm/unity-tools"
+documentation = "https://docs.rs/unity-tools"
+readme = "Readme.md"
+license = "MPL-2.0"
+edition = "2021"
+
+
+[[bin]]
+name = "unity-clean"
+path = "binaries/clean.rs"
+
+
+[dependencies]
+clap = "4.1.11"
+trash = "3.0.1"
+gen-iter = "0.3.0"
+tracing = "0.1.37"
+
+[dependencies.unity-utils]
+version = "0.0.0"
+path = "../unity-utils"
+
+[dev-dependencies]
+
+[features]
+default = []
