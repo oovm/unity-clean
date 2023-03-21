@@ -1,10 +1,10 @@
 [package]
-name = "unity-replace"
+name = "unity-utils"
 version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "..."
-repository = "https://github.com/oovm/sub_projects"
-documentation = "https://docs.rs/sub_projects"
+repository = "https://github.com/oovm/unity-tools"
+documentation = "https://docs.rs/unity-utils"
 readme = "Readme.md"
 license = "MPL-2.0"
 edition = "2021"

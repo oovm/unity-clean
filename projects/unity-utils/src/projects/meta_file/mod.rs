@@ -1,9 +1,20 @@
+use std::fmt::{Debug, Formatter};
 use super::*;
 
 
 pub struct UnityMetaFile {
     pub meta: PathBuf,
     pub file: PathBuf,
+}
+
+
+impl Debug for UnityMetaFile {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("UnityMetaFile")
+            .field("meta", &to_unix_path(&self.meta))
+            .field("file", &to_unix_path(&self.file))
+            .finish()
+    }
 }
 
 impl UnityProject {
