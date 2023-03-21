@@ -1,16 +1,13 @@
-use std::fs::{DirEntry, read_dir};
 use super::*;
-
+use std::fs::{read_dir, DirEntry};
 
 const DELETE_DIR: &[&str] = &["Library", "Logs", "obj", "Temp"];
 const DELETE_EXT: &[&str] = &[".sln", ".csproj"];
 
-
 impl UnityProject {
-    pub fn delete_useless(&self) -> impl Iterator<Item=WalkItem> {
+    pub fn delete_useless(&self) -> UnityResult<()> {
         'outer: for file in read_dir(&self.root)? {
             let (path, name) = path_info(file)?;
-
             for dir in DELETE_DIR {
                 if name.eq_ignore_ascii_case(dir) {
                     println!("Delete: {:?}", path.display());
@@ -30,14 +27,11 @@ impl UnityProject {
     }
 }
 
-
-fn path_info(entry: std::io::Result<DirEntry>) -> anyhow::Result<(PathBuf, String)> {
+fn path_info(entry: std::io::Result<DirEntry>) -> UnityResult<(PathBuf, String)> {
     let entry = entry?;
     let name = match entry.file_name().to_str() {
         Some(s) => s.to_string(),
-        None => {
-            return Err(anyhow::anyhow!("file name is not utf-8"));
-        }
+        None => Err(UnityError::custom_error("File name is not utf-8"))?,
     };
     Ok((entry.path().canonicalize()?, name))
 }
