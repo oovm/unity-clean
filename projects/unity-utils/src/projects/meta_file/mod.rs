@@ -1,7 +1,6 @@
-use std::fmt::{Debug, Formatter};
 use super::*;
 
-
+#[derive(Clone)]
 pub struct UnityMetaFile {
     pub meta: PathBuf,
     pub file: PathBuf,

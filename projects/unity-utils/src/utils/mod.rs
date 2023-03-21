@@ -1,17 +1,21 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use fast_walker::{WalkItem, WalkPlan};
+use gen_iter::GenIter;
+use crate::UnityProject;
 
-pub fn is_unity_path(dir: &Path) -> bool {
-    let assets = dir.join("Assets");
-    if !assets.exists() || !assets.is_dir() {
-        return false;
-    }
-    let packages = dir.join("Packages");
-    if !packages.exists() || !packages.is_dir() {
-        return false;
-    }
-    let project_settings = dir.join("ProjectSettings");
-    if !project_settings.exists() || !project_settings.is_dir() {
-        return false;
-    }
-    return true;
+pub fn find_unity_projects<P: AsRef<Path>>(root: P) -> impl Iterator<Item=UnityProject> {
+    let plan = WalkPlan::new(root).reject_if(|path, _| path.starts_with(".")).into_iter();
+    GenIter(move || {
+        for item in plan {
+            match item {
+                WalkItem::File { .. } => {}
+                WalkItem::Directory { path } => {
+                    if let Ok(project) = UnityProject::new(path) {
+                        yield project;
+                    }
+                }
+                WalkItem::Error { .. } => {}
+            }
+        }
+    })
 }

@@ -1,11 +1,9 @@
 #![feature(generators)]
 
 mod projects;
-mod project_clean;
+
 mod errors;
 
-
-pub use project_clean::*;
 
 mod utils;
 

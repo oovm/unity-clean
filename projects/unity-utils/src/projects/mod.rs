@@ -4,10 +4,13 @@ use gen_iter::GenIter;
 use crate::{UnityError, UnityResult};
 use fast_walker::utils::to_unix_path;
 pub mod meta_file;
+use std::fmt::{Debug, Formatter};
 
 pub struct UnityProject {
     root: PathBuf,
 }
+
+mod clean;
 
 impl UnityProject {
     pub fn new<P: AsRef<Path>>(root: P) -> UnityResult<Self> {
