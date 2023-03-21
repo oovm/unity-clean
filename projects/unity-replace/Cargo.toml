@@ -1,6 +1,5 @@
 [package]
 name = "unity-replace"
-publish = false
 version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "..."
@@ -15,8 +14,7 @@ anyhow = "1.0.69"
 trash = "3.0.1"
 gen-iter = "0.3.0"
 tracing = "0.1.37"
-jwalk = "0.8.1"
-yaml = "0.3.0"
+fast-walker = "0.1.2"
 
 [dev-dependencies]
 

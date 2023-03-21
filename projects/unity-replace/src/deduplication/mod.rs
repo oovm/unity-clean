@@ -1,22 +1,28 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use fast_walker::{WalkItem, WalkPlan};
+use gen_iter::GenIter;
+use crate::{UnityError, UnityResult};
 
-use jwalk::{rayon::iter::ParallelBridge, Parallelism};
+pub mod meta_file;
 
-fn find_meta<P: AsRef<Path>>(root: P, threads: usize) {
-    jwalk::WalkDir::new(root)
-        .parallelism(Parallelism::RayonNewPool(threads))
-        .into_iter()
-        .par_bridge()
-        .filter_map(|dir_entry_result| {
-            let dir_entry = dir_entry_result.ok()?;
-            if dir_entry.file_type().is_file() {
-                let path = dir_entry.path();
-                let text = std::fs::read_to_string(path).ok()?;
-                if text.contains("hello world") {
-                    return Some(true);
-                }
-            }
-            None
-        })
-        .count();
+pub struct UnityProject {
+    root: PathBuf,
 }
+
+impl UnityProject {
+    pub fn new<P: AsRef<Path>>(root: P) -> UnityResult<Self> {
+        let out = Self {
+            root: root.as_ref().to_path_buf(),
+        };
+        let assets = out.assets_path();
+        if !assets.exists() || !assets.is_dir() {
+            Err(UnityError::custom_error("Assets folder not found"))?
+        }
+        Ok(out)
+    }
+    pub fn assets_path(&self) -> &Path {
+        self.root.join("Assets").as_path()
+    }
+
+}
+
