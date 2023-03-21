@@ -11,12 +11,16 @@ edition = "2021"
 
 
 [[bin]]
+name = "unity"
+path = "binaries/main.rs"
+
+[[bin]]
 name = "unity-clean"
 path = "binaries/clean.rs"
 
 
 [dependencies]
-clap = "4.1.11"
+clap = { version = "4.1.11", features = ["derive"] }
 trash = "3.0.1"
 gen-iter = "0.3.0"
 tracing = "0.1.37"

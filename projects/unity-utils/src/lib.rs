@@ -4,7 +4,7 @@ mod projects;
 
 mod errors;
 
-pub mod utils;
+pub mod helper;
 
 pub use crate::{
     errors::{UnityError, UnityResult},
