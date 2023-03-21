@@ -6,6 +6,7 @@ use std::{
 };
 mod from_std;
 mod from_trash;
+mod from_uuid;
 
 pub type UnityResult<T> = Result<T, UnityError>;
 
@@ -17,6 +18,7 @@ pub struct UnityError {
 #[derive(Debug, Clone)]
 pub enum UnityErrorKind {
     CustomError { message: String },
+    SyntaxError { text: String, message: String },
     IOError { path: String, message: String },
 }
 
@@ -44,6 +46,9 @@ impl Display for UnityErrorKind {
                 "" => write!(f, "{}", message),
                 _ => write!(f, "{} at {}", message, path),
             },
+            UnityErrorKind::SyntaxError { text, message } => {
+                write!(f, "{} at {}", message, text)
+            }
         }
     }
 }
