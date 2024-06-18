@@ -11,13 +11,18 @@ pub enum UnityCommands {
 pub struct UnityClean {
     /// Clean all files
     #[clap(short, long)]
-    pub all: bool,
+    all: bool,
+    #[clap(short, long)]
+    recursive: bool,
 }
 
 impl UnityTools {
     pub fn run(&self) {
         match &self.command {
-            UnityCommands::Clean(cmd) => cmd.run(),
+            Some(UnityCommands::Clean(cmd)) => cmd.run(),
+            None => {
+                // todo: print help
+            }
         }
     }
 }

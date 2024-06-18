@@ -7,5 +7,5 @@ mod commands;
 #[command(author, version, about, long_about = include_str!("../readme.md"))]
 pub struct UnityTools {
     #[clap(subcommand)]
-    pub command: UnityCommands,
+    pub command: Option<UnityCommands>,
 }
